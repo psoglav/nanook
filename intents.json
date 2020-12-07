@@ -1,0 +1,77 @@
+{
+  "intents": [
+    {
+      "tag": "greetings",
+      "patterns": [
+        "hello",
+        "hello there",
+        "hey",
+        "hey there",
+        "sup",
+        "what's up?",
+        "greeting",
+        "howdy",
+        "morning",
+        "good morning"
+      ],
+      "replies": [
+        "hello!",
+        "hello there!",
+        "hey!",
+        "hey",
+        "hey there!",
+        "greetings",
+        "good morning, sir"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you",
+        "i am leaving",
+        "have good day",
+        "have good one",
+        "see ya",
+        "cya"
+      ],
+      "replies": [
+        "sad to see you go :c",
+        "later",
+        "talk to you later",
+        "goodbye!",
+        "have a great day"
+      ]
+    },
+    {
+      "tag": "age",
+      "patterns": [
+        "how old are you?",
+        "what is your age",
+        "age?"
+      ],
+      "replies": [
+        "im 2 minutes old",
+        "later",
+        "talk to you later",
+        "goodbye!",
+        "have a great day"
+      ]
+    },
+    {
+      "tag": "shop",
+      "patterns": [
+        "how much",
+        "what is the cost of",
+        "can i have",
+        "give me"
+      ],
+      "replies": [
+        "it will cost you something around 20 bucks",
+        "14$ please",
+        "it is 15 dollars for this"
+      ]
+    }
+  ]
+}
