@@ -12,16 +12,18 @@
         "greeting",
         "howdy",
         "morning",
-        "good morning"
+        "good morning",
+        "good day",
+        "good evening"
       ],
       "replies": [
         "hello!",
         "hello there!",
         "hey!",
-        "hey",
+        "hey.",
         "hey there!",
-        "greetings",
-        "good morning, sir"
+        "greetings.",
+        "good morning, sir."
       ]
     },
     {
@@ -29,6 +31,7 @@
       "patterns": [
         "bye",
         "goodbye",
+        "good night",
         "see you",
         "i am leaving",
         "have good day",
@@ -38,10 +41,26 @@
       ],
       "replies": [
         "sad to see you go :c",
-        "later",
-        "talk to you later",
+        "later.",
+        "talk to you later.",
         "goodbye!",
-        "have a great day"
+        "have a great day."
+      ]
+    },
+    {
+      "tag": "being",
+      "patterns": [
+        "how are you",
+        "how is it going",
+        "how have you been",
+        "is every think okay"
+      ],
+      "replies": [
+        "fine, thanks.",
+        "cannot complain.",
+        "im great.",
+        "im good.",
+        "well, i've been better."
       ]
     },
     {
@@ -52,11 +71,7 @@
         "age?"
       ],
       "replies": [
-        "im 2 minutes old",
-        "later",
-        "talk to you later",
-        "goodbye!",
-        "have a great day"
+        "im 21 years old."
       ]
     },
     {
@@ -68,9 +83,9 @@
         "give me"
       ],
       "replies": [
-        "it will cost you something around 20 bucks",
-        "14$ please",
-        "it is 15 dollars for this"
+        "it will cost you something around 20 bucks.",
+        "14$ please.",
+        "it is 15 dollars for this."
       ]
     }
   ]
