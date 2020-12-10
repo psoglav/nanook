@@ -8,7 +8,7 @@ from tensorflow.keras.optimizers import SGD
 import dataset_preparation as d
 
 training = []
-output_empty = [0] * len(d.classes)
+output_empty = [0, 0]
 
 for document in d.documents:
     bag = []

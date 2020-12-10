@@ -1,0 +1,1 @@
+[] write the parser of actions manually and train NN on the dataset I will build through this parser
