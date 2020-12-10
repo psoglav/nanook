@@ -2,26 +2,27 @@ import json
 import pickle
 import nltk
 
+
 lemmatizer = nltk.stem.WordNetLemmatizer()
-intents = json.loads(open('datasets/intents.json').read())
+patterns = json.loads(open('datasets/intro_patterns.json').read())
 words = []
-classes = []
 documents = []
 ignore_letters = list('?.,!')
 
-for intent in intents['intents']:
-    for pattern in intent['patterns']:
-        word_list = nltk.word_tokenize(pattern)
-        words.extend(word_list)
-        documents.append((word_list, intent['tag']))
+for pattern in patterns['intro']:
+    word_list = nltk.word_tokenize(pattern)
+    words.extend(word_list)
+    documents.append((word_list, 1))
 
-        if intent['tag'] not in classes:
-            classes.append(intent['tag'])
+for pattern in patterns['not']:
+    word_list = nltk.word_tokenize(pattern)
+    words.extend(word_list)
+    documents.append((word_list, 0))
 
 words = [lemmatizer.lemmatize(word)
          for word in words if word not in ignore_letters]
 
 words = sorted(set(words))
 
-pickle.dump(words, open('dump/words.pkl', 'wb'))
-pickle.dump(classes, open('dump/classes.pkl', 'wb'))
+pickle.dump(words, open('dump/intro_words.pkl', 'wb'))
+pickle.dump(documents, open('dump/intro_patterns.pkl', 'wb'))
