@@ -1,5 +1,7 @@
 import sys
 from pprint import pprint
+# from parse_actions.action import Action
+from action import Action
 from natasha import (
     Doc,
     NewsSyntaxParser,
@@ -35,6 +37,44 @@ def parse_syntax(sentence):
     return doc
 
 
+def parse_action(tokens):
+    rels = [t.rel for t in tokens]
+    passed = []
+
+    action = Action()
+
+    def points(head, t):
+        return head.id == t.head_id
+
+    for t in tokens:
+        passed.append(t)
+
+        # if t.rel == 'punct' and (''):
+            
+
+        if t.rel == 'root':
+            action.define_what(t)  # verb
+
+    for t in tokens:
+        if t.rel == 'advmod' and points(action._what, t):
+            action.define_how(t)  # adverb
+
+        if t.rel == 'nsubj':
+            if 'nsubj' in rels:
+                action.define_who(t)  # subject
+
+        if t.rel == 'obj':
+            if 'nsubj' in rels:
+                action.define_whom(t)  # object
+            else:
+                action.define_who(t)
+
+        if t.rel == 'obl' and points(action._what, t):
+            action.define_with(t)  # object
+
+    return action
+
+
 def print_deps(doc):
     print()
     doc.sents[0].syntax.print()
@@ -50,21 +90,12 @@ print_deps(doc)
 tokens = list(doc.sents[0].syntax.tokens)
 tokens = sorted(tokens, key=lambda t: int(t.head_id.split('_')[1]))
 
+
 root = ''
 nsubj = ''
 obj = ''
 root_t = None
 xcomp_t = None
-
-
-def find_head(child_t, rel=''):
-    for t in doc.sents[0].syntax.tokens:
-        if rel:
-            if t.rel == 'obj' and t.head_id == child_t.id:
-                return t
-        else:
-            if t.head_id == child_t.id:
-                return t
 
 
 for t in doc.sents[0].syntax.tokens:
@@ -86,8 +117,8 @@ if xcomp_t:
         if t.rel == 'obl' and t.head_id == xcomp_t.id:
             obj = t.text
 
-print('ДЕЙСТВИЕ: ' + nsubj + ' -> ' + root + ' ' +
-      (xcomp_t.text + ' -> ' if xcomp_t else ' -> ') + obj)
+
+parse_action(doc.sents[0].syntax.tokens).print(heads=True)
 
 
 print()
