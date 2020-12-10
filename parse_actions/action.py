@@ -1,48 +1,84 @@
-class Action:
-    def __init__(self,
-                 _who=None,
-                 _how=None,
-                 _what=None,
-                 _whom=None,
-                 _with=None,
-                 _case=None):
-        self._who = _who
-        self._how = _how
-        self._what = _what
-        self._whom = _whom
-        self._with = _with
+class Act(object):
+    def detect_root(self, tokens):
+        candidates = [t for t in tokens if t.rel == 'root']
 
-    def define_who(self, value):
-        self._who = value
+        if not len(candidates):
+            candidates = [t for t in tokens if t.head_id == '1_0']
 
-    def define_how(self, value):
-        self._how = value
+        if not len(candidates):
+            print(tokens)
+            self.root = None
+            return
 
-    def define_what(self, value):
-        self._what = value
+        self.root = Act.patch_token(candidates[0], tokens)
 
-    def define_whom(self, value):
-        self._whom = value
+    def detect_subject(self, tokens):
+        if not self.root:
+            return
+        else:
+            for t in tokens:
+                if self.is_subject(t):
+                    self.subject = Act.patch_token(t, tokens)
 
-    def define_with(self, value):
-        self._with = value
+    def detect_object(self, tokens):
+        if not self.root:
+            return
+        else:
+            for t in tokens:
+                if self.is_object(t):
+                    self.object = Act.patch_token(t, tokens)
 
-    def print(self, heads=False):
-        arrow = ' > ' if heads else ''
-        s = 'ACTION: '
+    def is_subject(self, t):
+        return Act.points_to(t, self.root['token']) and Act.has_any(t, ['nsubj', 'nsubj:pass'])
 
-        if self._who:
-            s += self._who.text + '(who?)' + arrow
-        if self._how and self._what:
-            s += self._how.text + '(how?)'  + arrow
-        if self._who and self._what:
-            s += self._what.text + '(what?)' + arrow
-        if self._who and self._what and self._whom:
-            s += self._whom.text + '(whom?)'
-        if self._who and self._what and self._whom and self._with:
-            s += arrow + self._with.text + '(with what?)'
+    def is_object(self, t):
+        return Act.points_to(t, self.root['token']) and Act.has_any(t, ['obj'])
 
-        print(s)
+    @staticmethod
+    def get_leaves(head, tokens):
+        return [t for t in tokens if Act.points_to(t, head)]
 
-    def do(self):
-        self.print()
+    @staticmethod
+    def points_to(token, head):
+        return head.id == token.head_id
+
+    @staticmethod
+    def has_any(token, rels):
+        return token.rel in rels
+
+    @staticmethod
+    def get_related(token, tokens):
+        return [t for t in Act.get_leaves(token, tokens) if t.rel == 'conj']
+
+    @staticmethod
+    def patch_token(token, tokens):
+        return {
+            "token": token,
+            "related": Act.get_related(token, tokens)
+        }
+
+    @staticmethod
+    def merge_with_related(patched_token):
+        tokens = patched_token['token']
+        s = patched_token['token'].text
+
+        if len(patched_token['related']):
+            for rel in patched_token['related']:
+                tokens.append(rel)
+                s += ', ' + rel.text
+
+        return tokens, s
+
+    def print(self):
+        if not self.root:
+            return
+
+        subject = self.subject['token'].text
+
+        if len(self.subject['related']):
+            for rel in self.subject['related']:
+                subject += ', ' + rel.text
+
+        action = self.root['token'].text
+
+        print(subject + ' --> ' + action)
