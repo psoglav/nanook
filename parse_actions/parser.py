@@ -1,8 +1,6 @@
-from action import Act
-import sys
-from pprint import pprint
-# from parse_actions.action import Action
-# from action import Action
+import nltk
+from parse_actions.action import Act
+from parse_actions.correction import prepare_for_parsing
 from natasha import (
     Doc,
     NewsSyntaxParser,
@@ -16,15 +14,12 @@ emb = NewsEmbedding()
 syntax_parser = NewsSyntaxParser(emb)
 
 
-def enter_sentence():
+def enter_text():
     text = ''
     inp = '1'
 
-    print()
-
     while inp:
-        inp = ''
-        inp = input('предлож.: ')
+        inp = input('text: ')
         text += inp + ' '
 
     return text
@@ -44,34 +39,45 @@ def print_deps(doc):
     print()
 
 
-def print_token(i, tokens):
-    t = tokens[i]
-    h_i = int(t.head_id.split('_')[1]) - 1
+def print_tokens(tokens):
+    for t in tokens:
+        h_i = int(t.head_id.split('_')[1]) - 1
 
-    line = f'{t.id}:{t.head_id} - ({t.rel}) {t.text}'
-    line += ' ' * (35 - len(line))
-    line += f' <-- {tokens[h_i].text}' if h_i >= 0 else ' ------ ROOT'
+        line = f'{t.id}:{t.head_id} - ({t.rel}) {t.text}'
+        line += ' ' * (35 - len(line))
+        line += f' <-- {tokens[h_i].text}' if h_i >= 0 else ' ------ ROOT'
 
-    print(line)
+        print(line)
 
+doc = ''
 
-text = enter_sentence()
-doc = parse_syntax(text)
+while 1:
+    text = enter_text()
+    print()
+    text = prepare_for_parsing(text)
 
-print_deps(doc)
+    sentences = nltk.sent_tokenize(text)
 
-tokens = list(doc.sents[0].syntax.tokens)
+    for sentence in sentences:
+        doc = parse_syntax(sentence)
+        tokens = list(doc.sents[0].syntax.tokens)
 
-print()
+        action = Act()
+        action.detect_root(tokens)
+        action.detect_subject(tokens)
+        action.detect_object(tokens)
+        action.detect_xcomp(tokens)
+        act = action.compose()
+        
+        if not act:
+            continue
+        
+        # print(f'({sentence.strip()})')
+        print(act)
+    print()
+    if sentences:
+        print_deps(doc)
+    print()
 
-action = Act()
-action.detect_root(tokens)
-action.detect_subject(tokens)
-action.print()
-
-print()
-
-for i, t in enumerate(tokens):
-    print_token(i, tokens)
-
-print()
+# print()
+# print_tokens(tokens)
