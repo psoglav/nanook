@@ -55,7 +55,7 @@ class Act(object):
         return Act.points_to(t, self.root['token']) and Act.has_any(t, ['xcomp'])
 
     @staticmethod
-    def get_leaves(head, tokens):
+    def get_related(head, tokens):
         return [t for t in tokens if Act.points_to(t, head)]
 
     @staticmethod
@@ -67,20 +67,20 @@ class Act(object):
         return token.rel in rels
 
     @staticmethod
-    def get_related(token, tokens):
-        return [t for t in Act.get_leaves(token, tokens) if t.rel == 'conj']
+    def get_connected(token, tokens):
+        return [t for t in Act.get_related(token, tokens) if t.rel == 'conj']
 
     @staticmethod
-    def get_related_deep(token, tokens):
-        related = Act.get_related(token, tokens)
+    def get_connected_deep(token, tokens):
+        connected = Act.get_connected(token, tokens)
 
-        if not len(related):
+        if not len(connected):
             return []
 
-        for rel in related:
-            related.extend(Act.get_related_deep(rel, related))
+        for rel in connected:
+            connected.extend(Act.get_connected_deep(rel, connected))
 
-        return related
+        return connected
 
     @staticmethod
     def get_relation_tags(tokens):
@@ -90,16 +90,16 @@ class Act(object):
     def patch_token(token, tokens):
         return {
             "token": token,
-            "related": Act.get_related_deep(token, tokens)
+            "connected": Act.get_connected_deep(token, tokens)
         }
 
     @staticmethod
-    def merge_with_related(patched_token):
+    def merge_with_connected(patched_token):
         tokens = [patched_token['token']]
         s = patched_token['token'].text
 
-        if len(patched_token['related']):
-            for rel in patched_token['related']:
+        if len(patched_token['connected']):
+            for rel in patched_token['connected']:
                 tokens.append(rel)
                 s += ', ' + rel.text
 
@@ -113,13 +113,13 @@ class Act(object):
         if not self.root or not self.subj:
             return
 
-        subj = Act.merge_with_related(self.subj)[1]
+        subj = Act.merge_with_connected(self.subj)[1]
         action = self.root['token'].text
-        
+
         if self.xcomp:
             xcomp = self.xcomp['token'].text
 
         if self.obj:
-            _object = Act.merge_with_related(self.obj)[1]
+            _object = Act.merge_with_connected(self.obj)[1]
 
         return (subj + arrow + action + ['', arrow + xcomp][bool(xcomp)] + ['', arrow + _object][bool(_object)]).strip()

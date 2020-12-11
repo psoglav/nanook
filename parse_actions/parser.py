@@ -50,6 +50,7 @@ def print_tokens(tokens):
         print(line)
 
 doc = ''
+tokens = ''
 
 while 1:
     text = enter_text()
@@ -75,9 +76,9 @@ while 1:
         # print(f'({sentence.strip()})')
         print(act)
     print()
-    if sentences:
-        print_deps(doc)
-    print()
+    # if sentences:
+        # print_deps(doc)
+    # print()
 
-# print()
-# print_tokens(tokens)
+    print()
+    if tokens: print_tokens(tokens)
